@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 export default function Console(){
     return(
         <div>
-            server ID: {useParams().id}
+           The server ID is: {useParams().id}
         </div>
     )
 }
