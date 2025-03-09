@@ -8,7 +8,8 @@ import { useRouter, useParams } from "next/navigation";
 import { isAuthenticated } from "@/lib/utils/authenticated";
 import Sidebar from "@/components/airlink/Sidebar";
 import ServerSidebar from "@/components/airlink/ServerSidebar";
-import { Globe, Image, Server, Hash, Tag, Activity, MemoryStick, Cpu, HardDrive } from "lucide-react";
+import { Globe, Image, Server, Hash, Tag, Activity, MemoryStick, Cpu, HardDrive, Power, RotateCcw, OctagonX } from "lucide-react";
+import { Button } from "@/components/shadcn/button";
 
 const Overview: React.FC = () => {
   const router = useRouter();
@@ -67,10 +68,17 @@ const Overview: React.FC = () => {
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
       <main className={cn("pt-14 transition-all duration-300 ease-in-out", isSidebarOpen ? "pl-60" : "pl-0")}>
         <div className="p-6 sm:p-4 md:p-6">
-          <div className="mb-4">
-            <h1 className="text-2xl font-semibold">Overview</h1>
-            <p className="text-muted-foreground">Summary of your server is shown here.</p>
-          </div>
+        <div className="mb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold">Overview</h1>
+          <p className="text-muted-foreground">Summary of your server is shown here.</p>
+        </div>
+        <div className="flex space-x-4">
+          <Button className="bg-emerald-600 hover:bg-emerald-500 text-white"><Power/>Start</Button>
+          <Button className="bg-neutral-600 hover:bg-neutral-600/80 text-white"><RotateCcw/>Restart</Button>
+          <Button className="bg-red-600 hover:bg-red-500 text-white"><OctagonX/>Stop</Button>
+        </div>
+      </div>
 
           <ServerSidebar />
 
