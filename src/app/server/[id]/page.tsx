@@ -94,7 +94,7 @@ const Overview: React.FC = () => {
             ))}
           </div>
 
-            <div className="flex gap-6">
+            <div className="lg:flex lg:gap-6">
 
             <div className="w-full lg:w-2/3 ">
             <div className="flex mt-6 gap-4 min-h-[400px]">
@@ -111,7 +111,7 @@ const Overview: React.FC = () => {
             />
           </div>
 
-            <div className="grid grid-cols-1 w-1/3 sm:grid-cols-2 lg:grid-cols-1 gap-4 mt-4">
+            <div className="grid grid-cols-1 w-full lg:w-1/3 sm:grid-cols-2 lg:grid-cols-1 gap-4 mt-4">
             {statusCards.map((card, index) => (
               <Card key={index} className="flex flex-row items-center justify-between bg-neutral-500/5 border-neutral-300/5">
                 <div>
