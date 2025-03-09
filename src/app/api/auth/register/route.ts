@@ -23,10 +23,35 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { name, email, password } = registerSchema.parse(body)
 
+    // Check if username or email already exists
+    const existingUser = await db.users.findFirst({
+      where: {
+        OR: [
+          { username: name },
+          { email }
+        ]
+      }
+    })
+
+    if (existingUser) {
+      // Determine which field caused the conflict
+      if (existingUser.username === name) {
+        return NextResponse.json(
+          { message: "Username already taken. Please choose a different username." },
+          { status: 409 }
+        )
+      } else {
+        return NextResponse.json(
+          { message: "Email already registered. Please use a different email or try logging in." },
+          { status: 409 }
+        )
+      }
+    }
+
     // Hash the password
     const hashedPassword = await hash(password, 10)
 
-    // Try to create the user directly - let Prisma handle unique constraints
+    // Create the user
     const user = await db.users.create({
       data: {
         username: name,
@@ -60,10 +85,24 @@ export async function POST(req: Request) {
     if (error instanceof PrismaClientKnownRequestError) {
       // P2002 is Prisma's error code for unique constraint violations
       if (error.code === 'P2002') {
-        return NextResponse.json(
-          { message: "A user with this email already exists" },
-          { status: 409 }
-        )
+        const target = error.meta?.target as string[] || []
+        
+        if (target.includes('username')) {
+          return NextResponse.json(
+            { message: "Username already taken. Please choose a different username." },
+            { status: 409 }
+          )
+        } else if (target.includes('email')) {
+          return NextResponse.json(
+            { message: "Email already registered. Please use a different email or try logging in." },
+            { status: 409 }
+          )
+        } else {
+          return NextResponse.json(
+            { message: "This user already exists." },
+            { status: 409 }
+          )
+        }
       }
     }
 

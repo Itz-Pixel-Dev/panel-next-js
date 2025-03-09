@@ -18,10 +18,12 @@ export default function Signup() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: ""
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
     letter: false,
@@ -51,6 +53,13 @@ export default function Signup() {
     setError(null);
     setIsLoading(true);
 
+    // Validate password matching
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
     const { length, letter, number, uppercase } = passwordCriteria;
     if (!length || !letter || !number || !uppercase) {
       setError("Password does not meet security requirements");
@@ -64,7 +73,11 @@ export default function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        }),
       });
 
       if (!response.ok) {
@@ -83,6 +96,14 @@ export default function Signup() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    signIn("google", { callbackUrl: "/dashboard" });
+  };
+
+  const handleDiscordSignIn = () => {
+    signIn("discord", { callbackUrl: "/dashboard" });
   };
 
   if (!mounted) return null;
@@ -105,8 +126,8 @@ export default function Signup() {
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {error && (
-                      <div className="rounded-md bg-red-50 p-4">
-                        <div className="text-sm text-red-700">{error}</div>
+                      <div className="rounded-md bg-destructive/10 p-4">
+                        <div className="text-sm text-destructive">{error}</div>
                       </div>
                     )}
                     <div className="space-y-5">
@@ -147,25 +168,46 @@ export default function Signup() {
                           placeholder="••••••••"
                           value={formData.password}
                           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          onFocus={() => setIsFocused(true)}
+                          onBlur={() => setIsFocused(false)}
                           className="h-12 text-base"
                           required
                         />
-                        <div className="pt-1.5">
-                          <ul className="space-y-2">
-                            <li className={`flex items-center gap-2 ${passwordCriteria.length ? "text-green-500" : "text-destructive"} text-sm`}>
-                              {passwordCriteria.length ? "✓" : "✗"} At least 8 characters
-                            </li>
-                            <li className={`flex items-center gap-2 ${passwordCriteria.letter ? "text-green-500" : "text-destructive"} text-sm`}>
-                              {passwordCriteria.letter ? "✓" : "✗"} At least one lowercase letter
-                            </li>
-                            <li className={`flex items-center gap-2 ${passwordCriteria.uppercase ? "text-green-500" : "text-destructive"} text-sm`}>
-                              {passwordCriteria.uppercase ? "✓" : "✗"} At least one uppercase letter
-                            </li>
-                            <li className={`flex items-center gap-2 ${passwordCriteria.number ? "text-green-500" : "text-destructive"} text-sm`}>
-                              {passwordCriteria.number ? "✓" : "✗"} At least one number
-                            </li>
-                          </ul>
-                        </div>
+                        {(isFocused || formData.password) && (
+                          <div className="pt-1.5">
+                            <ul className="space-y-2">
+                              <li className={`flex items-center gap-2 ${passwordCriteria.length ? "text-green-500" : "text-destructive"} text-sm`}>
+                                {passwordCriteria.length ? "✓" : "✗"} At least 8 characters
+                              </li>
+                              <li className={`flex items-center gap-2 ${passwordCriteria.letter ? "text-green-500" : "text-destructive"} text-sm`}>
+                                {passwordCriteria.letter ? "✓" : "✗"} At least one lowercase letter
+                              </li>
+                              <li className={`flex items-center gap-2 ${passwordCriteria.uppercase ? "text-green-500" : "text-destructive"} text-sm`}>
+                                {passwordCriteria.uppercase ? "✓" : "✗"} At least one uppercase letter
+                              </li>
+                              <li className={`flex items-center gap-2 ${passwordCriteria.number ? "text-green-500" : "text-destructive"} text-sm`}>
+                                {passwordCriteria.number ? "✓" : "✗"} At least one number
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2.5">
+                        <Label htmlFor="confirmPassword" className="text-foreground font-medium">Confirm Password</Label>
+                        <Input
+                          type="password"
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          placeholder="••••••••"
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          className="h-12 text-base"
+                          required
+                        />
+                        {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                          <p className="text-destructive text-sm mt-1">Passwords do not match</p>
+                        )}
                       </div>
                     </div>
 
@@ -193,50 +235,71 @@ export default function Signup() {
                         </div>
                       </div>
 
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-                        className="w-full h-12 font-medium"
-                      >
-                        <svg
-                          stroke="currentColor"
-                          fill="currentColor"
-                          strokeWidth="0"
-                          version="1.1"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 48 48"
-                          enableBackground="new 0 0 48 48"
-                          className="mr-2 size-5"
-                          height="1em"
-                          width="1em"
-                          xmlns="http://www.w3.org/2000/svg"
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleGoogleSignIn}
+                          className="h-12 font-medium"
                         >
-                          <path
-                            fill="#FFC107"
-                            d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
-                            c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
-                            c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                          />
-                          <path
-                            fill="#FF3D00"
-                            d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
-                            C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                          />
-                          <path
-                            fill="#4CAF50"
-                            d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
-                            c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                          />
-                          <path
-                            fill="#1976D2"
-                            d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
-                            c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                          />
-                        </svg>
-                        Sign up with Google
-                      </Button>
+                          <svg
+                            stroke="currentColor"
+                            fill="currentColor"
+                            strokeWidth="0"
+                            version="1.1"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 48 48"
+                            enableBackground="new 0 0 48 48"
+                            className="mr-2 size-5"
+                            height="1em"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill="#FFC107"
+                              d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
+                              c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
+                              c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+                            />
+                            <path
+                              fill="#FF3D00"
+                              d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
+                              C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+                            />
+                            <path
+                              fill="#4CAF50"
+                              d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
+                              c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+                            />
+                            <path
+                              fill="#1976D2"
+                              d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
+                              c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+                            />
+                          </svg>
+                          Google
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleDiscordSignIn}
+                          className="h-12 font-medium"
+                        >
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 127.14 96.36" 
+                            className="mr-2 size-5"
+                            fill="#5865F2"
+                          >
+                            <g>
+                              <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                            </g>
+                          </svg>
+                          Discord
+                        </Button>
+                      </div>
                     </div>
                   </form>
 
@@ -252,7 +315,7 @@ export default function Signup() {
               <div className="hidden lg:block relative h-full min-h-[650px]">
                 <Image
                   src="/login-bg.jpeg"
-                  alt="background"
+                  alt="Login background"
                   fill
                   className="object-cover"
                   priority

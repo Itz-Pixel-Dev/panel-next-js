@@ -1,23 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: {
-      enabled: true
-    },
     turbo: {
       resolveAlias: {
-        'bcrypt': require.resolve('bcryptjs')
+        'bcrypt': 'bcryptjs'
       }
     }
   },
-  // Webpack configuration (used as fallback)
   webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      "bcrypt": require.resolve("bcryptjs")
-    }
-    return config
+    config.resolve.fallback = {};
+    return config;
   }
-}
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig; 

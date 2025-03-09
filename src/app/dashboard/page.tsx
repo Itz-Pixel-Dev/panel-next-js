@@ -10,34 +10,39 @@ import LoadingScreen from "@/components/airlink/LoadingScreen";
 import ServerCard from "@/components/airlink/dashboard/ServerCard";
 import { useRouter } from "next/navigation";
 import { Server as ServerIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/store/auth-store";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const setUser = useAuth((state) => state.setUser);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [servers, setServers] = useState<Server[]>([
     { name: "Server1", uuid: "123e4567", ram: "8GB", cpu: "400%", disk: "50GB", memoryUsage: "8/16GB", cpuUsage: "50%", diskUsage: "25/50GB", status: 'Online' },
     { name: "Server2", uuid: "223e4567", ram: "6GB", cpu: "800%", disk: "100GB", memoryUsage: "16/32GB", cpuUsage: "70%", diskUsage: "50/100GB", status: 'Starting' },
     { name: "Server3", uuid: "323e4567", ram: "12GB", cpu: "1600%", disk: "200GB", memoryUsage: "32/64GB", cpuUsage: "90%", diskUsage: "100/200GB", status: 'Stopped' }
   ]);
 
+  // Check authentication status
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/check');
-        if (!response.ok) {
-          router.push("/auth/login");
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push("/auth/login");
-      }
-    };
+    if (status === "loading") return;
     
-    checkAuth();
-  }, [router]);
+    if (status === "unauthenticated") {
+      router.replace("/auth/login");
+      return;
+    }
+    
+    if (status === "authenticated" && session?.user) {
+      setUser({
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name
+      });
+      setIsLoading(false);
+    }
+  }, [status, session, router, setUser]);
 
   useEffect(() => {
     const interval = setInterval(() => {
