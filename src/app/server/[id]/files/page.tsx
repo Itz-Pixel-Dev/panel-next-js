@@ -110,9 +110,15 @@ const FileExplorer: React.FC = () => {
         { name: "server-icon.png", type: "image", size: 4096, modified: "2023-05-11", path: "/" }
     ]
 
-    const filteredFiles = mockFiles.filter(
-        (file) => file.path === currentPath && file.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    const filteredFiles = mockFiles
+    .filter(
+        (file) => file.path === currentPath && file.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
+    .sort((a, b) => {
+        if (a.type === 'folder' && b.type !== 'folder') return -1;
+        if (a.type !== 'folder' && b.type === 'folder') return 1;
+        return a.name.localeCompare(b.name);
+    });
 
     const getFileIcon = (type: FileType) => {
         switch (type) {
@@ -175,7 +181,7 @@ const FileExplorer: React.FC = () => {
                                     <p className="text-muted-foreground">Browse and manage server files.</p>
                                 </div>
 
-                                <ServerSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+                                <ServerSidebar/>
 
                                 <Card className="h-full flex flex-col">
                                     {/* <CardHeader className="pb-2">
