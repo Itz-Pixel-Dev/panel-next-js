@@ -46,6 +46,7 @@ const getStatusIcon = (status: "Online" | "Starting" | "Stopped") => {
 }
 
 const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
+  const router = useRouter();
   const memoryUsage =
     server.status === "Stopped"
       ? 0

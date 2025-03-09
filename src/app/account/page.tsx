@@ -173,15 +173,6 @@ export default function Account() {
 
   return (
     <div className="min-h-screen dark bg-background text-foreground">
-      <LoadingScreen loading={loading} />
-      <AnimatePresence>
-        {!loading && (
-          <motion.div
-            initial={{ opacity: 0, filter: "blur(5px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, filter: "blur(5px)" }}
-            transition={{ duration: 0.5 }}
-          >
             <Header isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
             <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
             <main className={cn("pt-14 transition-all duration-300 ease-in-out", isSidebarOpen ? "pl-60" : "pl-0")}>
@@ -276,9 +267,6 @@ export default function Account() {
                 </div>
               </div>
             </main>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 } 
