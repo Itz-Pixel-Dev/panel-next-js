@@ -4,6 +4,7 @@ import { cn, Server } from "@/lib/utils";
 import Header from "@/components/airlink/Header";
 import { useRouter } from "next/navigation";
 import { isAuthenticated } from "@/lib/utils/authenticated";
+import Sidebar from "@/components/airlink/Sidebar";
 import ServerSidebar from "@/components/airlink/ServerSidebar";
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
@@ -166,13 +167,16 @@ const FileExplorer: React.FC = () => {
     return (
         <div className="min-h-screen dark bg-background text-foreground">
                         <Header isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-                        <ServerSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+                        <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
                         <main className={cn("pt-14 transition-all duration-300 ease-in-out", isSidebarOpen ? "pl-60" : "pl-0")}>
                             <div className="p-6 sm:p-4 md:p-6">
                                 <div className="mb-6">
                                     <h1 className="text-2xl font-semibold">File Manager</h1>
                                     <p className="text-muted-foreground">Browse and manage server files.</p>
                                 </div>
+
+                                <ServerSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+
                                 <Card className="h-full flex flex-col">
                                     {/* <CardHeader className="pb-2">
                                             <CardTitle>File Manager</CardTitle>
