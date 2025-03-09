@@ -76,7 +76,7 @@ const Overview: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
             {cards.map((card, index) => (
-              <Card key={index} className="flex flex-row items-center justify-between">
+              <Card key={index} className="flex flex-row items-center justify-between bg-neutral-500/5 border-neutral-300/5">
                 <div>
                   <CardHeader className="truncate text-sm font-medium text-neutral-400">{card.title}</CardHeader>
                   <CardContent className="-mt-5 text-lg font-bold tracking-tight">{card.content}</CardContent>
@@ -86,11 +86,11 @@ const Overview: React.FC = () => {
             ))}
           </div>
 
-            <div className="flex gap-8">
+            <div className="flex gap-6">
 
             <div className="w-full lg:w-2/3 ">
             <div className="flex mt-6 gap-4 min-h-[400px]">
-              <div className="bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-800/20 dark:border-neutral-600/10 shadow shadow-neutral-900/20 dark:shadow-transparent rounded-t-xl p-4 flex-1">
+              <div className="bg-neutral-500/5 border border-neutral-300/5 shadow rounded-t-xl p-4 flex-1">
                 <p className="text-[15px]"><span className="text-yellow-500">airlink@container ~ </span>Server marked as offline...</p>
               </div>
             </div>
@@ -99,13 +99,13 @@ const Overview: React.FC = () => {
               type="text" 
               autoComplete="off" 
               placeholder="Type a command..."
-              className="w-full px-4 py-3 bg-neutral-200 dark:bg-neutral-600/20 text-neutral-800 dark:text-white rounded-b-xl text-sm border border-neutral-800/20 dark:border-neutral-600/10 focus:ring-1 focus:ring-neutral-500/50 dark:focus:ring-neutral-100/20 focus:border-transparent placeholder:font-medium placeholder:text-neutral-600 dark:placeholder:text-neutral-500"
+              className="w-full px-4 py-3 bg-neutral-600/20 text-white rounded-b-xl text-sm border border-neutral-300/5 focus:ring-1 focus:ring-neutral-100/20 focus:border-transparent placeholder:font-medium placeholder:text-neutral-500"
             />
           </div>
 
             <div className="grid grid-cols-1 w-1/3 sm:grid-cols-2 lg:grid-cols-1 gap-4 mt-4">
             {statusCards.map((card, index) => (
-              <Card key={index} className="flex flex-row items-center justify-between">
+              <Card key={index} className="flex flex-row items-center justify-between bg-neutral-500/5 border-neutral-300/5">
                 <div>
                   <CardHeader className="truncate text-sm font-medium text-neutral-400">{card.title}</CardHeader>
                   <CardContent className="-mt-5 text-lg font-bold tracking-tight">{card.content}</CardContent>
